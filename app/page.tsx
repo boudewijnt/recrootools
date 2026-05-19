@@ -15,10 +15,10 @@ export default function Home() {
 
       <section className="max-w-5xl mx-auto px-8 py-20">
         <h1 className="text-4xl font-semibold text-black mb-4">
-          Recroo Tools
+          Recrootools
         </h1>
         <p className="text-lg mb-16" style={{ color: "#9ba3a9" }}>
-          Interne tools voor Plug-in Recruitment
+          Tools die recruiters echt gebruiken
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
