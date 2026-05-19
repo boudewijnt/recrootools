@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Recroo Tools — Plug-in Recruitment",
-  description: "Interne tools voor Plug-in Recruitment",
+  title: "Recrootools — Plug-in Recruitment",
+  description: "Tools die recruiters echt gebruiken",
 };
 
 export default function RootLayout({
