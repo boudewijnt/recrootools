@@ -68,6 +68,30 @@ export default async function DashboardPage() {
             )}
           </div>
         </div>
+
+        <h2 className="text-xl font-semibold text-black mt-12 mb-6">Tools</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <a
+            href="/vacature-analyse"
+            className="group rounded-2xl border border-gray-100 p-6 bg-white hover:border-[#006f66] transition-colors"
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg mb-4"
+              style={{ backgroundColor: '#006f66' }}
+            >
+              ✦
+            </div>
+            <h3 className="font-semibold text-black mb-1 group-hover:text-[#006f66] transition-colors">
+              Vacature Analyse
+            </h3>
+            <p className="text-sm" style={{ color: '#9ba3a9' }}>
+              Analyseer vacatureteksten op 6 criteria en ontvang een PDF-rapport.
+            </p>
+            <p className="text-xs mt-3 font-medium" style={{ color: '#a0bfb9' }}>
+              Gratis beschikbaar
+            </p>
+          </a>
+        </div>
       </section>
     </main>
   )
