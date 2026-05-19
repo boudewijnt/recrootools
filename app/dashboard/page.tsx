@@ -36,15 +36,22 @@ export default async function DashboardPage() {
               Recrootools
             </span>
           </div>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="text-sm hover:underline"
-              style={{ color: '#9ba3a9' }}
-            >
-              Uitloggen
-            </button>
-          </form>
+          <div className="flex items-center gap-5">
+            {user.email === 'boudewijn@plgn.nl' && (
+              <a href="/admin" className="text-sm hover:underline" style={{ color: '#9ba3a9' }}>
+                Admin
+              </a>
+            )}
+            <form action={logout}>
+              <button
+                type="submit"
+                className="text-sm hover:underline"
+                style={{ color: '#9ba3a9' }}
+              >
+                Uitloggen
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
