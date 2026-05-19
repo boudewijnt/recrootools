@@ -248,7 +248,7 @@ export default function ChatInterface({ extract, onKlaar }: Props) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Typ je antwoord…"
-            className="flex-1 text-sm px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#006f66]"
+            className="flex-1 text-sm text-gray-900 px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#006f66]"
           />
           <button
             type="submit"

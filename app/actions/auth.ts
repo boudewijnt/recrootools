@@ -2,8 +2,17 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+const MAX_USERS = 100
 
 export async function signup(formData: FormData) {
+  const admin = createAdminClient()
+  const { data } = await admin.auth.admin.listUsers({ perPage: MAX_USERS + 1 })
+  if ((data?.users?.length ?? 0) >= MAX_USERS) {
+    redirect(`/signup?error=${encodeURIComponent('Aanmelden is tijdelijk gesloten. De bèta zit op maximale capaciteit (100 gebruikers). Probeer het later opnieuw.')}`)
+  }
+
   const supabase = await createClient()
 
   const email = formData.get('email') as string

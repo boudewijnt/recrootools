@@ -38,7 +38,7 @@ export default async function SignupPage({
               type="text"
               required
               placeholder="Jan Jansen"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
+              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
             />
           </div>
 
@@ -52,7 +52,7 @@ export default async function SignupPage({
               type="email"
               required
               placeholder="jan@bureau.nl"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
+              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
             />
           </div>
 
@@ -67,7 +67,7 @@ export default async function SignupPage({
               required
               minLength={8}
               placeholder="Minimaal 8 tekens"
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
+              className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-gray-400 transition-colors"
             />
           </div>
 
