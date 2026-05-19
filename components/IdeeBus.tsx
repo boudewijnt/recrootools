@@ -8,6 +8,7 @@ type Status = 'idle' | 'laden' | 'succes' | 'fout'
 export default function IdeeBus() {
   const [inhoud, setInhoud] = useState('')
   const [status, setStatus] = useState<Status>('idle')
+  const [foutmelding, setFoutmelding] = useState<string | null>(null)
 
   async function handleVerstuur(e: React.FormEvent) {
     e.preventDefault()
@@ -17,6 +18,7 @@ export default function IdeeBus() {
     formData.set('inhoud', inhoud)
     const result = await stuurIdee(formData)
     if (result.error) {
+      setFoutmelding(result.error)
       setStatus('fout')
     } else {
       setStatus('succes')
@@ -59,7 +61,7 @@ export default function IdeeBus() {
 
           {status === 'fout' && (
             <p className="text-sm mt-2" style={{ color: '#c0392b' }}>
-              Er ging iets mis. Probeer het opnieuw.
+              {foutmelding || 'Er ging iets mis. Probeer het opnieuw.'}
             </p>
           )}
 
