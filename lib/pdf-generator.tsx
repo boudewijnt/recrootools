@@ -14,8 +14,8 @@ import type { AnalyseData, CriteriumScore } from './types'
 Font.register({
   family: 'DM Sans',
   fonts: [
-    { src: 'https://fonts.gstatic.com/s/dmsans/v15/rP2Hp2ywxg089UriCZOIHQ.woff2', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/dmsans/v15/rP2Cp2ywxg089UriASitCBimCw.woff2', fontWeight: 600 },
+    { src: path.join(process.cwd(), 'public', 'fonts', 'DMSans-Regular.ttf'), fontWeight: 400 },
+    { src: path.join(process.cwd(), 'public', 'fonts', 'DMSans-SemiBold.ttf'), fontWeight: 600 },
   ],
 })
 
