@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/actions/auth'
 import { redirect } from 'next/navigation'
+import IdeeBus from '@/components/IdeeBus'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -91,6 +92,10 @@ export default async function DashboardPage() {
               Gratis beschikbaar
             </p>
           </a>
+        </div>
+
+        <div className="mt-16 max-w-xl">
+          <IdeeBus />
         </div>
       </section>
     </main>
