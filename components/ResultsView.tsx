@@ -23,7 +23,7 @@ export default function ResultsView({ data }: Props) {
     scores.reduce((s, c) => s + c.score, 0) / scores.length * 10
   )
   const aantalGoed = scores.filter((c) => c.score >= 7).length
-  const aantalAandacht = scores.filter((c) => c.score < 5).length
+  const aantalAandacht = scores.filter((c) => c.oordeel !== 'goed').length
 
   async function downloadPDF() {
     setDownloading(true)
