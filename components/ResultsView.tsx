@@ -5,7 +5,9 @@ import CriterionCard from './CriterionCard'
 import type { AnalyseData, AnalyseResult, CriteriumScore } from '@/lib/types'
 
 const PRIORITEITS_CRITERIA = ['perspectief', 'wiifm']
-const VOLGORDE = ['perspectief', 'wiifm', 'inclusief', 'b2niveau', 'cta', 'compleetheid'] as const
+
+const STANDAARD_CRITERIA = ['perspectief', 'wiifm', 'inclusief', 'b2niveau', 'cta', 'compleetheid'] as const
+const EXTRA_CRITERIA = ['rolToonMatch', 'vindbaarheid', 'knockOut', 'onderscheidendVermogen', 'employerBranding', 'praktischeInfo', 'toneOfVoice'] as const
 
 interface Props {
   data: AnalyseData
@@ -16,14 +18,16 @@ export default function ResultsView({ data }: Props) {
   const [downloadFout, setDownloadFout] = useState<string | null>(null)
 
   const { analyse } = data
-  const scores = VOLGORDE.map((k) => analyse[k as keyof AnalyseResult]).filter(
-    (v): v is CriteriumScore => typeof v === 'object' && v !== null && 'score' in v
-  )
+
+  const alleScores = [...STANDAARD_CRITERIA, ...EXTRA_CRITERIA]
+    .map((k) => analyse[k as keyof AnalyseResult])
+    .filter((v): v is CriteriumScore => typeof v === 'object' && v !== null && 'score' in v)
+
   const gemiddelde = Math.round(
-    scores.reduce((s, c) => s + c.score, 0) / scores.length * 10
+    alleScores.reduce((s, c) => s + c.score, 0) / alleScores.length * 10
   )
-  const aantalGoed = scores.filter((c) => c.score >= 7).length
-  const aantalAandacht = scores.filter((c) => c.oordeel !== 'goed').length
+  const aantalGoed = alleScores.filter((c) => c.oordeel === 'goed').length
+  const aantalAandacht = alleScores.filter((c) => c.oordeel !== 'goed').length
 
   async function downloadPDF() {
     setDownloading(true)
@@ -95,16 +99,32 @@ export default function ResultsView({ data }: Props) {
         <p className="text-sm" style={{ color: '#3d5a5e' }}>{analyse.samenvatting}</p>
       </div>
 
-      {/* Criteria grid */}
+      {/* Standaard 6 criteria */}
       <div>
-        <h2 className="text-lg font-semibold mb-4" style={{ color: '#1a2e30' }}>Beoordeling per criterium</h2>
+        <h2 className="text-lg font-semibold mb-1" style={{ color: '#1a2e30' }}>Basisanalyse</h2>
+        <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>De 6 standaard criteria</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {VOLGORDE.map((sleutel) => (
+          {STANDAARD_CRITERIA.map((sleutel) => (
             <CriterionCard
               key={sleutel}
               sleutel={sleutel}
-              data={analyse[sleutel as keyof AnalyseResult] as Parameters<typeof CriterionCard>[0]['data']}
+              data={analyse[sleutel as keyof AnalyseResult] as CriteriumScore}
               prioriteit={PRIORITEITS_CRITERIA.includes(sleutel)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Extra 7 criteria */}
+      <div>
+        <h2 className="text-lg font-semibold mb-1" style={{ color: '#1a2e30' }}>Uitgebreide analyse</h2>
+        <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>7 extra criteria</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {EXTRA_CRITERIA.map((sleutel) => (
+            <CriterionCard
+              key={sleutel}
+              sleutel={sleutel}
+              data={analyse[sleutel as keyof AnalyseResult] as CriteriumScore}
             />
           ))}
         </div>

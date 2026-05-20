@@ -3,12 +3,19 @@
 import type { CriteriumScore } from '@/lib/types'
 
 const NAMEN: Record<string, string> = {
-  perspectief: 'Perspectief',
-  wiifm: 'WIIFM',
-  inclusief: 'Inclusief',
-  b2niveau: 'B2-niveau',
-  cta: 'Call to action',
-  compleetheid: 'Compleetheid',
+  perspectief:            'Perspectief',
+  wiifm:                  'WIIFM',
+  inclusief:              'Inclusief',
+  b2niveau:               'B2-niveau',
+  cta:                    'Call to action',
+  compleetheid:           'Compleetheid',
+  rolToonMatch:           'Rol-toon match',
+  vindbaarheid:           'Vindbaarheid (SEO)',
+  knockOut:               'Knock-outeisen',
+  onderscheidendVermogen: 'Onderscheidend vermogen',
+  employerBranding:       'Employer branding',
+  praktischeInfo:         'Praktische info',
+  toneOfVoice:            'Tone-of-voice',
 }
 
 function scoreKleur(score: number) {
