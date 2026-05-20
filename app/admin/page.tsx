@@ -12,10 +12,10 @@ export default async function AdminPage() {
 
   const admin = createAdminClient()
 
-  const [{ data: authData }, { data: profiles }, { data: ideeen }] = await Promise.all([
+  const [{ data: authData }, { data: profiles }, { data: ideeen, error: ideeenError }] = await Promise.all([
     admin.auth.admin.listUsers({ perPage: 200 }),
     admin.from('profiles').select('*'),
-    admin.from('ideeen').select('*').order('aangemaakt_op', { ascending: false }),
+    admin.from('ideeen').select('*'),
   ])
 
   const authUsers = authData?.users ?? []
@@ -32,22 +32,34 @@ export default async function AdminPage() {
     .map(u => ({
       id: u.id,
       email: u.email ?? '',
-      naam: profileMap[u.id]?.full_name ?? '—',
+      naam: profileMap[u.id]?.full_name ?? (u.user_metadata as Record<string, string>)?.full_name ?? '—',
       plan: profileMap[u.id]?.plan ?? 'free',
       lidSinds: new Date(u.created_at).toLocaleDateString('nl-NL', {
         day: 'numeric', month: 'short', year: 'numeric',
       }),
     }))
 
-  const ideeenLijst = (ideeen ?? []).map(i => ({
-    id: i.id,
-    inhoud: i.inhoud,
-    datum: new Date(i.aangemaakt_op).toLocaleDateString('nl-NL', {
-      day: 'numeric', month: 'short', year: 'numeric',
-    }),
-    naam: profileMap[i.user_id]?.full_name ?? '—',
-    email: emailMap[i.user_id] ?? '—',
-  }))
+  const ideeenLijst = (ideeen ?? [])
+    .sort((a, b) => {
+      const da = a.created_at ?? a.aangemaakt_op ?? ''
+      const db = b.created_at ?? b.aangemaakt_op ?? ''
+      return db.localeCompare(da)
+    })
+    .map(i => {
+      const ts = i.created_at ?? i.aangemaakt_op
+      const authUser = authUsers.find(u => u.id === i.user_id)
+      return {
+        id: i.id,
+        inhoud: i.inhoud,
+        datum: ts
+          ? new Date(ts).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '—',
+        naam: profileMap[i.user_id]?.full_name
+          ?? (authUser?.user_metadata as Record<string, string>)?.full_name
+          ?? '—',
+        email: emailMap[i.user_id] ?? '—',
+      }
+    })
 
   return (
     <main className="min-h-screen bg-white">
@@ -122,8 +134,14 @@ export default async function AdminPage() {
         <div>
           <h2 className="text-xl font-semibold text-black mb-1">Ideeënbus</h2>
           <p className="text-sm mb-6" style={{ color: '#9ba3a9' }}>
-            {ideeenLijst.length} {ideeenLijst.length === 1 ? 'idee' : 'ideeën'} ingediend
+            {ideeenError ? 'Query mislukt — zie fout hieronder' : `${ideeenLijst.length} ${ideeenLijst.length === 1 ? 'idee' : 'ideeën'} ingediend`}
           </p>
+
+          {ideeenError && (
+            <div className="mb-4 rounded-xl px-4 py-3 text-sm font-mono" style={{ backgroundColor: '#fff3f3', color: '#c0392b' }}>
+              Query fout: {ideeenError.message}
+            </div>
+          )}
 
           {ideeenLijst.length === 0 ? (
             <div

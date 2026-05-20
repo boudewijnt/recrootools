@@ -7,32 +7,65 @@ import ResultsView from '@/components/ResultsView'
 import type { ExtractResult, VacatureContext, AnalyseResult, AnalyseData } from '@/lib/types'
 
 type Stap = 'invoer' | 'context' | 'laden' | 'resultaat'
+type InvoerModus = 'url' | 'tekst'
 
 export default function VacatureAnalyseClient() {
   const [stap, setStap] = useState<Stap>('invoer')
+  const [invoerModus, setInvoerModus] = useState<InvoerModus>('url')
+  const [url, setUrl] = useState('')
   const [vacaturetekst, setVacaturetekst] = useState('')
   const [extract, setExtract] = useState<ExtractResult | null>(null)
   const [analyseData, setAnalyseData] = useState<AnalyseData | null>(null)
   const [fout, setFout] = useState<string | null>(null)
+  const [ophalen, setOphalen] = useState(false)
   const [extraheert, setExtraheert] = useState(false)
+
+  async function handleUrl() {
+    if (!url.trim()) return
+    setFout(null)
+    setOphalen(true)
+
+    let tekst = ''
+    try {
+      const res = await fetch('/api/fetch-vacature', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Ophalen mislukt')
+      tekst = json.tekst
+      setVacaturetekst(tekst)
+    } catch (e) {
+      setFout(e instanceof Error ? e.message : 'Kon de URL niet ophalen. Controleer de URL en probeer opnieuw.')
+      setOphalen(false)
+      return
+    }
+
+    setOphalen(false)
+    await analyseerTekst(tekst)
+  }
 
   async function handleAnalyseer() {
     if (!vacaturetekst.trim()) return
     setFout(null)
-    setExtraheert(true)
+    await analyseerTekst(vacaturetekst)
+  }
 
+  async function analyseerTekst(tekst: string) {
+    setExtraheert(true)
     try {
       const res = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vacaturetekst }),
+        body: JSON.stringify({ vacaturetekst: tekst }),
       })
       if (!res.ok) throw new Error('Extractie mislukt')
       const data: ExtractResult = await res.json()
       setExtract(data)
       setStap('context')
     } catch {
-      setFout('Kon de vacaturetekst niet analyseren. Controleer de tekst en probeer opnieuw.')
+      setFout('Kon de vacaturetekst niet analyseren. Controleer de invoer en probeer opnieuw.')
     } finally {
       setExtraheert(false)
     }
@@ -60,11 +93,15 @@ export default function VacatureAnalyseClient() {
 
   function opnieuw() {
     setStap('invoer')
+    setUrl('')
     setVacaturetekst('')
     setExtract(null)
     setAnalyseData(null)
     setFout(null)
   }
+
+  const bezig = ophalen || extraheert
+  const labelKnop = ophalen ? 'URL ophalen…' : extraheert ? 'Tekst lezen…' : 'Analyseer'
 
   return (
     <main className="min-h-screen bg-white">
@@ -95,31 +132,65 @@ export default function VacatureAnalyseClient() {
               Vacature analyseren
             </h1>
             <p className="text-sm mb-8" style={{ color: '#9ba3a9' }}>
-              Plak een vacaturetekst en ontvang een gedetailleerde analyse op 6 criteria.
+              Voer een URL in of plak de tekst en ontvang een gedetailleerde analyse op 6 criteria.
             </p>
 
-            <textarea
-              value={vacaturetekst}
-              onChange={(e) => setVacaturetekst(e.target.value)}
-              placeholder="Plak hier de volledige vacaturetekst…"
-              className="w-full h-64 text-sm px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none focus:border-[#006f66] transition-colors"
-              style={{ color: '#1a2e30' }}
-            />
+            {/* Tabs */}
+            <div className="flex gap-6 mb-6 border-b border-gray-100">
+              {(['url', 'tekst'] as InvoerModus[]).map((modus) => (
+                <button
+                  key={modus}
+                  onClick={() => { setInvoerModus(modus); setFout(null) }}
+                  className="pb-3 text-sm font-medium transition-colors"
+                  style={{
+                    color: invoerModus === modus ? '#1a2e30' : '#9ba3a9',
+                    borderBottom: invoerModus === modus ? '2px solid #006f66' : '2px solid transparent',
+                  }}
+                >
+                  {modus === 'url' ? 'URL opgeven' : 'Tekst plakken'}
+                </button>
+              ))}
+            </div>
+
+            {invoerModus === 'url' ? (
+              <>
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !bezig && handleUrl()}
+                  placeholder="https://bedrijf.nl/vacatures/functietitel"
+                  className="w-full text-sm px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-[#006f66] transition-colors"
+                  style={{ color: '#1a2e30' }}
+                />
+                <p className="text-xs mt-2" style={{ color: '#9ba3a9' }}>
+                  Werkt met openbare vacaturepagina's. LinkedIn en Indeed worden niet ondersteund.
+                </p>
+              </>
+            ) : (
+              <textarea
+                value={vacaturetekst}
+                onChange={(e) => setVacaturetekst(e.target.value)}
+                placeholder="Plak hier de volledige vacaturetekst…"
+                className="w-full h-64 text-sm px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none focus:border-[#006f66] transition-colors"
+                style={{ color: '#1a2e30' }}
+              />
+            )}
 
             {fout && (
               <p className="text-sm mt-3" style={{ color: '#c0392b' }}>{fout}</p>
             )}
 
             <button
-              onClick={handleAnalyseer}
-              disabled={!vacaturetekst.trim() || extraheert}
+              onClick={invoerModus === 'url' ? handleUrl : handleAnalyseer}
+              disabled={(invoerModus === 'url' ? !url.trim() : !vacaturetekst.trim()) || bezig}
               className="mt-4 w-full py-3 rounded-xl text-sm font-semibold text-white transition-opacity disabled:opacity-50"
               style={{ backgroundColor: '#006f66' }}
             >
-              {extraheert ? (
+              {bezig ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                  Tekst lezen…
+                  {labelKnop}
                 </span>
               ) : (
                 'Analyseer'
