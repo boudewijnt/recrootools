@@ -74,7 +74,7 @@ Geef ALLEEN geldig JSON terug in deze exacte structuur:
 oordeel-regels: score >= 7 = "goed" | 5-6 = "matig" | < 5 = "zwak"
 top3: kies de 3 criteria met de laagste score uit alle 13 — dit zijn de prioriteiten`
 
-    const raw = await callClaude(prompt, systemPrompt)
+    const raw = await callClaude(prompt, systemPrompt, 4096)
     const result = parseJSON<AnalyseResult>(raw)
 
     return Response.json(result)

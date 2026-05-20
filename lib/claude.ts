@@ -4,10 +4,10 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-export async function callClaude(prompt: string, systemPrompt?: string): Promise<string> {
+export async function callClaude(prompt: string, systemPrompt?: string, maxTokens = 2048): Promise<string> {
   const response = await anthropic.messages.create({
     model: 'claude-opus-4-7',
-    max_tokens: 2048,
+    max_tokens: maxTokens,
     system: systemPrompt,
     messages: [{ role: 'user', content: prompt }],
   })
