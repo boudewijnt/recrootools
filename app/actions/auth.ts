@@ -39,16 +39,21 @@ export async function signup(formData: FormData) {
   if (signUpData.user) {
     await admin.from('profiles').upsert({ id: signUpData.user.id, full_name: fullName })
 
-    await new Resend(process.env.RESEND_API_KEY).emails.send({
-      from: FROM_EMAIL,
-      to: ADMIN_EMAIL,
-      subject: `Nieuwe aanmelding: ${fullName}`,
-      html: `<p>Er heeft zich een nieuwe gebruiker aangemeld op Recrootools:</p>
+    try {
+      const { error: emailError } = await new Resend(process.env.RESEND_API_KEY).emails.send({
+        from: FROM_EMAIL,
+        to: ADMIN_EMAIL,
+        subject: `Nieuwe aanmelding: ${fullName}`,
+        html: `<p>Er heeft zich een nieuwe gebruiker aangemeld op Recrootools:</p>
 <ul>
   <li><strong>Naam:</strong> ${fullName}</li>
   <li><strong>E-mail:</strong> ${email}</li>
 </ul>`,
-    })
+      })
+      if (emailError) console.error('Resend fout bij aanmelding:', emailError)
+    } catch (e) {
+      console.error('Resend exception bij aanmelding:', e)
+    }
   }
 
   redirect('/signup/bevestig')
