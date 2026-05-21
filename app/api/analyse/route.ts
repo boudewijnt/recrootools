@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server'
 import { callClaude, parseJSON } from '@/lib/claude'
+import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { AnalyseResult, VacatureContext } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
@@ -76,6 +78,16 @@ top3: kies de 3 criteria met de laagste score uit alle 13 — dit zijn de priori
 
     const raw = await callClaude(prompt, systemPrompt, 4096)
     const result = parseJSON<AnalyseResult>(raw)
+
+    try {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await createAdminClient().from('analyses').insert({ user_id: user.id })
+      }
+    } catch {
+      // logging failure mag analyse niet blokkeren
+    }
 
     return Response.json(result)
   } catch (error) {
