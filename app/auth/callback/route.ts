@@ -30,5 +30,13 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(new URL('/login?error=Bevestiging mislukt', request.url))
+  return NextResponse.redirect(
+    new URL(
+      '/login?error=' +
+        encodeURIComponent(
+          'E-mailadres bevestigd. Open de link in dezelfde browser als waar je je hebt aangemeld, of log direct in.'
+        ),
+      request.url
+    )
+  )
 }

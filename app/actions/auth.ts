@@ -3,7 +3,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { resend, FROM_EMAIL, ADMIN_EMAIL } from '@/lib/resend'
+import { Resend } from 'resend'
+import { FROM_EMAIL, ADMIN_EMAIL } from '@/lib/resend'
 
 const MAX_USERS = 100
 
@@ -38,7 +39,7 @@ export async function signup(formData: FormData) {
   if (signUpData.user) {
     await admin.from('profiles').upsert({ id: signUpData.user.id, full_name: fullName })
 
-    await resend.emails.send({
+    await new Resend(process.env.RESEND_API_KEY).emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: `Nieuwe aanmelding: ${fullName}`,

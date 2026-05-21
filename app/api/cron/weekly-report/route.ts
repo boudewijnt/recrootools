@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { resend, FROM_EMAIL, ADMIN_EMAIL } from '@/lib/resend'
+import { Resend } from 'resend'
+import { FROM_EMAIL, ADMIN_EMAIL } from '@/lib/resend'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -57,7 +58,7 @@ ${regels ? `<h3>Per gebruiker</h3><ul>${regels}</ul>` : '<p>Geen analyses uitgev
 <p><strong>Totaal geregistreerde gebruikers:</strong> ${totaalGebruikers}</p>
 `
 
-  await resend.emails.send({
+  await new Resend(process.env.RESEND_API_KEY).emails.send({
     from: FROM_EMAIL,
     to: ADMIN_EMAIL,
     subject: `Recrootools weekrapport — ${totaal} analyse${totaal !== 1 ? 's' : ''}`,
