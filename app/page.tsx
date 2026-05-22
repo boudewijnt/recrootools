@@ -5,6 +5,8 @@ import ToolCard from '@/components/ui/ToolCard'
 import ComingSoonCard from '@/components/ui/ComingSoonCard'
 import PublicIdeeBus from '@/components/PublicIdeeBus'
 
+export const dynamic = 'force-dynamic'
+
 const COMING_SOON = [
   {
     title: 'CV Screener',
@@ -44,7 +46,7 @@ export default async function Home() {
   const recentIdeen = (ideeen ?? []).map((i) => ({
     id: i.id as string,
     inhoud: i.inhoud as string,
-    daysAgo: daysAgoLabel(i.created_at as string),
+    daysAgo: i.created_at ? daysAgoLabel(i.created_at as string) : 'onbekend',
   }))
 
   return (

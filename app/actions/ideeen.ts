@@ -22,6 +22,7 @@ export async function stuurIdee(formData: FormData): Promise<{ error?: string }>
 export async function stuurPubliekIdee(formData: FormData): Promise<{ error?: string }> {
   const inhoud = (formData.get('inhoud') as string)?.trim()
   if (!inhoud) return { error: 'Leeg' }
+  if (inhoud.length > 1000) return { error: 'Te lang' }
 
   const admin = createAdminClient()
   const { error } = await admin

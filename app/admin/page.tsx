@@ -32,7 +32,7 @@ export default async function AdminPage() {
       email: u.email ?? '',
       naam:
         profileMap[u.id]?.full_name ??
-        (u.user_metadata as Record<string, string>)?.full_name ??
+        (u.user_metadata as { full_name?: string } | null)?.full_name ??
         '—',
       plan: profileMap[u.id]?.plan ?? 'free',
       lidSinds: new Date(u.created_at).toLocaleDateString('nl-NL', {
@@ -57,7 +57,7 @@ export default async function AdminPage() {
           : '—',
         naam:
           profileMap[i.user_id]?.full_name ??
-          (authUser?.user_metadata as Record<string, string>)?.full_name ??
+          (authUser?.user_metadata as { full_name?: string } | null)?.full_name ??
           'anoniem',
         email: emailMap[i.user_id] ?? '—',
       }
