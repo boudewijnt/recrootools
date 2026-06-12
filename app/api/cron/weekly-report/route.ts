@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { db, toISOStr } from '@/lib/db'
 import { Resend } from 'resend'
 import { FROM_EMAIL, ADMIN_EMAIL } from '@/lib/resend'
 
@@ -9,65 +9,51 @@ export async function GET(request: NextRequest) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const admin = createAdminClient()
-
   const weekGeleden = new Date()
   weekGeleden.setDate(weekGeleden.getDate() - 7)
   const weekGeledenISO = weekGeleden.toISOString()
 
-  const [{ data: analyses }, { data: authData }, { data: ideeen }] = await Promise.all([
-    admin.from('analyses').select('user_id, created_at').gte('created_at', weekGeledenISO),
-    admin.auth.admin.listUsers({ perPage: 200 }),
-    admin.from('ideeen').select('user_id, inhoud, created_at').gte('created_at', weekGeledenISO),
+  const [users, nieuweGebruikers, ideeen] = await Promise.all([
+    db`SELECT id, email, full_name, analyses_credits FROM users ORDER BY created_at DESC`,
+    db`SELECT id, email, full_name, created_at FROM users WHERE created_at >= ${weekGeledenISO} ORDER BY created_at DESC`,
+    db`
+      SELECT i.inhoud, i.created_at, i.user_id, u.full_name, u.email as user_email
+      FROM ideeen i
+      LEFT JOIN users u ON u.id = i.user_id
+      WHERE i.created_at >= ${weekGeledenISO}
+      ORDER BY i.created_at DESC
+    `,
   ])
 
-  const totaal = analyses?.length ?? 0
-  const uniekeGebruikers = new Set(analyses?.map((a) => a.user_id)).size
+  const totaalGebruikers = users.length
+  const nieuweGebruikersCount = nieuweGebruikers.length
 
-  const telPerGebruiker = (analyses ?? []).reduce<Record<string, number>>((acc, a) => {
-    if (a.user_id) acc[a.user_id] = (acc[a.user_id] ?? 0) + 1
-    return acc
-  }, {})
-
-  const gebruikerNamen = Object.fromEntries(
-    (authData?.users ?? []).map((u) => [
-      u.id,
-      (u.user_metadata as Record<string, string>)?.full_name ?? u.email ?? u.id,
-    ])
-  )
-  const gebruikerEmails = Object.fromEntries(
-    (authData?.users ?? []).map((u) => [u.id, u.email ?? ''])
-  )
-
-  const analyseRegels = Object.entries(telPerGebruiker)
-    .sort(([, a], [, b]) => b - a)
-    .map(([uid, tel]) => `<li>${gebruikerNamen[uid] ?? uid}: ${tel}x</li>`)
+  const nieuweGebruikersRegels = nieuweGebruikers
+    .map((u) => {
+      const datum = new Date(toISOStr(u.created_at)).toLocaleDateString('nl-NL', {
+        day: 'numeric', month: 'short',
+      })
+      return `<li><strong>${u.full_name ?? '—'}</strong> (${u.email}) op ${datum}</li>`
+    })
     .join('')
 
-  const ideeRegels = (ideeen ?? [])
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const ideeRegels = ideeen
     .map((i) => {
-      const naam = gebruikerNamen[i.user_id] ?? '—'
-      const emailAdres = gebruikerEmails[i.user_id] ?? '—'
-      const datum = new Date(i.created_at).toLocaleDateString('nl-NL', {
+      const naam = i.full_name ?? '—'
+      const emailAdres = i.user_email ?? '—'
+      const datum = new Date(toISOStr(i.created_at)).toLocaleDateString('nl-NL', {
         day: 'numeric', month: 'short',
       })
       return `<li><strong>${naam}</strong> (${emailAdres}) op ${datum}:<br/><em>${i.inhoud}</em></li>`
     })
     .join('')
 
-  const totaalGebruikers = authData?.users?.length ?? 0
-
   const html = `
 <h2>Wekelijks rapport Recrootools</h2>
 <p><strong>Periode:</strong> afgelopen 7 dagen</p>
 
-<h3>Vacature analyses</h3>
-<ul>
-  <li><strong>Totaal analyses:</strong> ${totaal}</li>
-  <li><strong>Unieke gebruikers:</strong> ${uniekeGebruikers}</li>
-</ul>
-${analyseRegels ? `<h4>Per gebruiker</h4><ul>${analyseRegels}</ul>` : '<p>Geen analyses uitgevoerd deze week.</p>'}
+<h3>Nieuwe gebruikers (${nieuweGebruikersCount})</h3>
+${nieuweGebruikersRegels ? `<ul>${nieuweGebruikersRegels}</ul>` : '<p>Geen nieuwe gebruikers deze week.</p>'}
 
 <h3>Ideeënbus</h3>
 ${ideeRegels ? `<ul>${ideeRegels}</ul>` : '<p>Geen nieuwe ideeën deze week.</p>'}
@@ -79,11 +65,11 @@ ${ideeRegels ? `<ul>${ideeRegels}</ul>` : '<p>Geen nieuwe ideeën deze week.</p>
   const { error: emailError } = await new Resend(process.env.RESEND_API_KEY).emails.send({
     from: FROM_EMAIL,
     to: ADMIN_EMAIL,
-    subject: `Recrootools weekrapport — ${totaal} analyse${totaal !== 1 ? 's' : ''}`,
+    subject: `Recrootools weekrapport — ${nieuweGebruikersCount} nieuwe gebruiker${nieuweGebruikersCount !== 1 ? 's' : ''}`,
     html,
   })
 
   if (emailError) console.error('Resend fout weekrapport:', emailError)
 
-  return Response.json({ ok: true, totaal, uniekeGebruikers, ideeen: ideeen?.length ?? 0 })
+  return Response.json({ ok: true, nieuweGebruikers: nieuweGebruikersCount, ideeen: ideeen.length, totaalGebruikers })
 }

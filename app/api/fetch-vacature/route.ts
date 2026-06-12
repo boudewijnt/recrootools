@@ -1,9 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { getAuthUserId } from '@/lib/auth'
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return Response.json({ error: 'Niet ingelogd' }, { status: 401 })
+  const userId = await getAuthUserId()
+  if (!userId) return Response.json({ error: 'Niet ingelogd' }, { status: 401 })
 
   const { url } = await request.json()
   if (!url || typeof url !== 'string') {
