@@ -1,12 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { db, toISOStr } from '@/lib/db'
 import DarkLayout from '@/components/layout/DarkLayout'
 import Badge from '@/components/ui/Badge'
 import ToolCard from '@/components/ui/ToolCard'
 import ComingSoonCard from '@/components/ui/ComingSoonCard'
 import IdeeBus from '@/components/IdeeBus'
 
-const ADMIN_EMAIL = 'boudewijn@plgn.nl'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL!
 
 const COMING_SOON = [
   { title: 'CV Screener',               description: "Upload CV's, AI rankt kandidaten op fit." },
@@ -16,56 +17,38 @@ const COMING_SOON = [
 ]
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const clerkUser = await currentUser()
+  if (!clerkUser) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, plan, plan_started_at')
-    .eq('id', user.id)
-    .single()
+  const [user] = await db`SELECT full_name, analyses_credits, created_at FROM users WHERE id = ${clerkUser.id}`
 
-  const planStarted = profile?.plan_started_at
-    ? new Date(profile.plan_started_at).toLocaleDateString('nl-NL', {
+  const isAdmin = clerkUser.emailAddresses[0]?.emailAddress === ADMIN_EMAIL
+
+  const lidSinds = user?.created_at
+    ? new Date(toISOStr(user.created_at)).toLocaleDateString('nl-NL', {
         day: 'numeric', month: 'long', year: 'numeric',
       })
     : undefined
-
-  const isAdmin = user.email === ADMIN_EMAIL
 
   return (
     <DarkLayout activeItem="dashboard" isAdmin={isAdmin}>
       <div className="px-8 py-10 max-w-4xl">
 
-        {/* Header */}
-        <p
-          className="text-xs font-semibold uppercase tracking-widest mb-6"
-          style={{ color: 'var(--color-muted)' }}
-        >
+        <p className="text-xs font-semibold uppercase tracking-widest mb-6" style={{ color: 'var(--color-muted)' }}>
           Dashboard
         </p>
         <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>
-          Welkom{profile?.full_name ? `, ${profile.full_name}` : ''}
+          Welkom{user?.full_name ? `, ${user.full_name}` : ''}
         </h1>
         <p className="text-sm mb-8" style={{ color: 'var(--color-muted)' }}>
-          {user.email}
+          {clerkUser.emailAddresses[0]?.emailAddress}
         </p>
 
-        {/* Plan badge */}
         <div className="mb-12">
-          <Badge
-            variant="plan"
-            plan={profile?.plan ?? 'free'}
-            startedAt={planStarted}
-          />
+          <Badge variant="plan" plan="free" startedAt={lidSinds} />
         </div>
 
-        {/* Tools */}
-        <p
-          className="text-xs font-semibold uppercase tracking-widest mb-5"
-          style={{ color: 'var(--color-muted)' }}
-        >
+        <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--color-muted)' }}>
           Tools
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16">
@@ -74,14 +57,13 @@ export default async function DashboardPage() {
             icon="✦"
             title="Vacature Analyse"
             description="Analyseer vacatureteksten op 6 criteria en ontvang een PDF-rapport."
-            availability="Gratis beschikbaar"
+            availability={`${user?.analyses_credits ?? 0} analyses resterend`}
           />
           {COMING_SOON.map((item) => (
             <ComingSoonCard key={item.title} title={item.title} description={item.description} />
           ))}
         </div>
 
-        {/* Ideeënbus */}
         <div id="ideeen" className="max-w-xl">
           <IdeeBus />
         </div>
