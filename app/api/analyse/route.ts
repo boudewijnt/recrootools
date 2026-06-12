@@ -1,10 +1,20 @@
 import { NextRequest } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 import { callClaude, parseJSON } from '@/lib/claude'
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { db } from '@/lib/db'
 import type { AnalyseResult, VacatureContext } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
+  const { userId } = await auth()
+  if (!userId) {
+    return Response.json({ error: 'Niet ingelogd' }, { status: 401 })
+  }
+
+  const [user] = await db`SELECT analyses_credits FROM users WHERE id = ${userId}`
+  if (!user || Number(user.analyses_credits) <= 0) {
+    return Response.json({ error: 'no_credits' }, { status: 402 })
+  }
+
   try {
     const { vacaturetekst, context }: { vacaturetekst: string; context: VacatureContext } =
       await request.json()
@@ -79,15 +89,7 @@ top3: kies de 3 criteria met de laagste score uit alle 13 — dit zijn de priori
     const raw = await callClaude(prompt, systemPrompt, 4096)
     const result = parseJSON<AnalyseResult>(raw)
 
-    try {
-      const supabase = await createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await createAdminClient().from('analyses').insert({ user_id: user.id })
-      }
-    } catch {
-      // logging failure mag analyse niet blokkeren
-    }
+    await db`UPDATE users SET analyses_credits = analyses_credits - 1 WHERE id = ${userId}`
 
     return Response.json(result)
   } catch (error) {
