@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/lib/supabase/admin'
+import { db, toISOStr } from '@/lib/db'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import ToolCard from '@/components/ui/ToolCard'
@@ -36,17 +36,17 @@ function daysAgoLabel(dateStr: string): string {
 }
 
 export default async function Home() {
-  const admin = createAdminClient()
-  const { data: ideeen } = await admin
-    .from('ideeen')
-    .select('id, inhoud, created_at')
-    .order('created_at', { ascending: false })
-    .limit(3)
+  const rows = await db`
+    SELECT id, inhoud, created_at
+    FROM ideeen
+    ORDER BY created_at DESC
+    LIMIT 3
+  `
 
-  const recentIdeen = (ideeen ?? []).map((i) => ({
+  const recentIdeen = rows.map((i) => ({
     id: i.id as string,
     inhoud: i.inhoud as string,
-    daysAgo: i.created_at ? daysAgoLabel(i.created_at as string) : 'onbekend',
+    daysAgo: daysAgoLabel(toISOStr(i.created_at)),
   }))
 
   return (
