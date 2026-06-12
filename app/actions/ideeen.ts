@@ -1,21 +1,16 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { auth } from '@clerk/nextjs/server'
+import { db } from '@/lib/db'
 
 export async function stuurIdee(formData: FormData): Promise<{ error?: string }> {
   const inhoud = (formData.get('inhoud') as string)?.trim()
   if (!inhoud) return { error: 'Leeg' }
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Niet ingelogd' }
+  const { userId } = await auth()
+  if (!userId) return { error: 'Niet ingelogd' }
 
-  const { error } = await supabase
-    .from('ideeen')
-    .insert({ user_id: user.id, inhoud })
-
-  if (error) return { error: error.message }
+  await db`INSERT INTO ideeen (user_id, inhoud) VALUES (${userId}, ${inhoud})`
   return {}
 }
 
@@ -24,11 +19,6 @@ export async function stuurPubliekIdee(formData: FormData): Promise<{ error?: st
   if (!inhoud) return { error: 'Leeg' }
   if (inhoud.length > 1000) return { error: 'Te lang' }
 
-  const admin = createAdminClient()
-  const { error } = await admin
-    .from('ideeen')
-    .insert({ inhoud })
-
-  if (error) return { error: error.message }
+  await db`INSERT INTO ideeen (inhoud) VALUES (${inhoud})`
   return {}
 }
