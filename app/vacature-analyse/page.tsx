@@ -1,11 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { requireAuth } from '@/lib/auth'
+import { db } from '@/lib/db'
 import VacatureAnalyseClient from './client'
 
 export default async function VacatureAnalysePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const userId = await requireAuth()
 
-  return <VacatureAnalyseClient />
+  const [user] = await db`SELECT analyses_credits FROM users WHERE id = ${userId}`
+  const credits = user ? Number(user.analyses_credits) : 0
+
+  return <VacatureAnalyseClient credits={credits} />
 }

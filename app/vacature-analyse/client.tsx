@@ -1,15 +1,23 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ChatInterface from '@/components/ChatInterface'
 import ResultsView from '@/components/ResultsView'
+import CreditsDisplay from '@/components/CreditsDisplay'
+import Paywall from '@/components/Paywall'
 import type { ExtractResult, VacatureContext, AnalyseResult, AnalyseData } from '@/lib/types'
 
 type Stap = 'invoer' | 'context' | 'laden' | 'resultaat'
 type InvoerModus = 'url' | 'tekst'
 
-export default function VacatureAnalyseClient() {
+type Props = {
+  credits: number
+}
+
+export default function VacatureAnalyseClient({ credits: initialCredits }: Props) {
+  const router = useRouter()
   const [stap, setStap] = useState<Stap>('invoer')
   const [invoerModus, setInvoerModus] = useState<InvoerModus>('url')
   const [url, setUrl] = useState('')
@@ -19,6 +27,7 @@ export default function VacatureAnalyseClient() {
   const [fout, setFout] = useState<string | null>(null)
   const [ophalen, setOphalen] = useState(false)
   const [extraheert, setExtraheert] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(initialCredits <= 0)
 
   async function handleUrl() {
     if (!url.trim()) return
@@ -81,10 +90,18 @@ export default function VacatureAnalyseClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ vacaturetekst, context }),
       })
+
+      if (res.status === 402) {
+        setShowPaywall(true)
+        setStap('context')
+        return
+      }
+
       if (!res.ok) throw new Error('Analyse mislukt')
       const analyse: AnalyseResult = await res.json()
       setAnalyseData({ vacaturetekst, context, analyse })
       setStap('resultaat')
+      router.refresh()
     } catch {
       setFout('De analyse is mislukt. Probeer het opnieuw.')
       setStap('context')
@@ -105,23 +122,28 @@ export default function VacatureAnalyseClient() {
 
   return (
     <main className="min-h-screen bg-white">
+      {showPaywall && <Paywall />}
+
       <header className="px-8 py-5 border-b border-gray-100">
-        <div className="max-w-5xl mx-auto flex items-center gap-4">
-          <Link href="/dashboard" className="text-sm hover:underline" style={{ color: '#9ba3a9' }}>
-            ← Dashboard
-          </Link>
-          <span style={{ color: '#e5e7eb' }}>|</span>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
-              style={{ backgroundColor: '#006f66' }}
-            >
-              ✦
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" className="text-sm hover:underline" style={{ color: '#9ba3a9' }}>
+              ← Dashboard
+            </Link>
+            <span style={{ color: '#e5e7eb' }}>|</span>
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
+                style={{ backgroundColor: '#006f66' }}
+              >
+                ✦
+              </div>
+              <span className="text-sm font-semibold" style={{ color: '#1a2e30' }}>
+                Vacature Analyse
+              </span>
             </div>
-            <span className="text-sm font-semibold" style={{ color: '#1a2e30' }}>
-              Vacature Analyse
-            </span>
           </div>
+          <CreditsDisplay credits={initialCredits} />
         </div>
       </header>
 
@@ -201,17 +223,11 @@ export default function VacatureAnalyseClient() {
 
         {stap === 'context' && extract && (
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-1" style={{ color: '#1a2e30' }}>
-              Context bevestigen
-            </h2>
+            <h2 className="text-2xl font-semibold mb-1" style={{ color: '#1a2e30' }}>Context bevestigen</h2>
             <p className="text-sm mb-6" style={{ color: '#9ba3a9' }}>
               Controleer de gevonden informatie en beantwoord eventuele vragen.
             </p>
-
-            {fout && (
-              <p className="text-sm mb-4" style={{ color: '#c0392b' }}>{fout}</p>
-            )}
-
+            {fout && <p className="text-sm mb-4" style={{ color: '#c0392b' }}>{fout}</p>}
             <div className="bg-white border border-gray-100 rounded-2xl p-6" style={{ minHeight: 400 }}>
               <ChatInterface extract={extract} onKlaar={handleContextKlaar} />
             </div>
@@ -244,7 +260,6 @@ export default function VacatureAnalyseClient() {
                 Nieuwe analyse
               </button>
             </div>
-
             <ResultsView data={analyseData} />
           </div>
         )}
