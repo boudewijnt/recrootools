@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import ChatInterface from '@/components/ChatInterface'
 import ResultsView from '@/components/ResultsView'
@@ -17,7 +16,7 @@ type Props = {
 }
 
 export default function VacatureAnalyseClient({ credits: initialCredits }: Props) {
-  const router = useRouter()
+  const [credits, setCredits] = useState(initialCredits)
   const [stap, setStap] = useState<Stap>('invoer')
   const [invoerModus, setInvoerModus] = useState<InvoerModus>('url')
   const [url, setUrl] = useState('')
@@ -100,8 +99,8 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
       if (!res.ok) throw new Error('Analyse mislukt')
       const analyse: AnalyseResult = await res.json()
       setAnalyseData({ vacaturetekst, context, analyse })
+      setCredits(prev => Math.max(0, prev - 1))
       setStap('resultaat')
-      router.refresh()
     } catch {
       setFout('De analyse is mislukt. Probeer het opnieuw.')
       setStap('context')
@@ -143,7 +142,7 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
               </span>
             </div>
           </div>
-          <CreditsDisplay credits={initialCredits} />
+          <CreditsDisplay credits={credits} />
         </div>
       </header>
 
