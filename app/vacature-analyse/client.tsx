@@ -120,24 +120,24 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
   const labelKnop = ophalen ? 'URL ophalen…' : extraheert ? 'Tekst lezen…' : 'Analyseer'
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
       {showPaywall && <Paywall />}
 
-      <header className="px-8 py-5 border-b border-gray-100">
+      <header className="px-8 py-5 border-b" style={{ borderColor: 'var(--color-border)' }}>
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm hover:underline" style={{ color: '#9ba3a9' }}>
+            <Link href="/dashboard" className="text-sm hover:underline" style={{ color: 'var(--color-muted)' }}>
               ← Dashboard
             </Link>
-            <span style={{ color: '#e5e7eb' }}>|</span>
+            <span style={{ color: 'var(--color-border)' }}>|</span>
             <div className="flex items-center gap-2">
               <div
                 className="w-6 h-6 rounded-lg flex items-center justify-center text-white text-xs"
-                style={{ backgroundColor: '#006f66' }}
+                style={{ backgroundColor: 'var(--color-accent)' }}
               >
                 ✦
               </div>
-              <span className="text-sm font-semibold" style={{ color: '#1a2e30' }}>
+              <span className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                 Vacature Analyse
               </span>
             </div>
@@ -149,23 +149,23 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
       <div className="max-w-5xl mx-auto px-8 py-10">
         {stap === 'invoer' && (
           <div className="max-w-2xl mx-auto">
-            <h1 className="text-3xl font-semibold mb-2" style={{ color: '#1a2e30' }}>
+            <h1 className="text-3xl font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
               Vacature analyseren
             </h1>
-            <p className="text-sm mb-8" style={{ color: '#9ba3a9' }}>
+            <p className="text-sm mb-8" style={{ color: 'var(--color-muted)' }}>
               Voer een URL in of plak de tekst en ontvang een gedetailleerde analyse op 6 criteria.
             </p>
 
             {/* Tabs */}
-            <div className="flex gap-6 mb-6 border-b border-gray-100">
+            <div className="flex gap-6 mb-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
               {(['url', 'tekst'] as InvoerModus[]).map((modus) => (
                 <button
                   key={modus}
                   onClick={() => { setInvoerModus(modus); setFout(null) }}
                   className="pb-3 text-sm font-medium transition-colors"
                   style={{
-                    color: invoerModus === modus ? '#1a2e30' : '#9ba3a9',
-                    borderBottom: invoerModus === modus ? '2px solid #006f66' : '2px solid transparent',
+                    color: invoerModus === modus ? 'var(--color-text)' : 'var(--color-muted)',
+                    borderBottom: invoerModus === modus ? '2px solid var(--color-accent)' : '2px solid transparent',
                   }}
                 >
                   {modus === 'url' ? 'URL opgeven' : 'Tekst plakken'}
@@ -181,10 +181,10 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
                   onChange={(e) => setUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && !bezig && handleUrl()}
                   placeholder="https://bedrijf.nl/vacatures/functietitel"
-                  className="w-full text-sm px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-[#006f66] transition-colors"
-                  style={{ color: '#1a2e30' }}
+                  className="w-full text-sm px-4 py-3 rounded-xl border outline-none transition-colors"
+                  style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}
                 />
-                <p className="text-xs mt-2" style={{ color: '#9ba3a9' }}>
+                <p className="text-xs mt-2" style={{ color: 'var(--color-muted)' }}>
                   Werkt met openbare vacaturepagina's. LinkedIn en Indeed worden niet ondersteund.
                 </p>
               </>
@@ -193,8 +193,8 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
                 value={vacaturetekst}
                 onChange={(e) => setVacaturetekst(e.target.value)}
                 placeholder="Plak hier de volledige vacaturetekst…"
-                className="w-full h-64 text-sm px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none focus:border-[#006f66] transition-colors"
-                style={{ color: '#1a2e30' }}
+                className="w-full h-64 text-sm px-4 py-3 rounded-xl border outline-none resize-none transition-colors"
+                style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}
               />
             )}
 
@@ -222,12 +222,12 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
 
         {stap === 'context' && extract && (
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-1" style={{ color: '#1a2e30' }}>Context bevestigen</h2>
-            <p className="text-sm mb-6" style={{ color: '#9ba3a9' }}>
+            <h2 className="text-2xl font-semibold mb-1" style={{ color: 'var(--color-text)' }}>Context bevestigen</h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--color-muted)' }}>
               Controleer de gevonden informatie en beantwoord eventuele vragen.
             </p>
             {fout && <p className="text-sm mb-4" style={{ color: '#c0392b' }}>{fout}</p>}
-            <div className="bg-white border border-gray-100 rounded-2xl p-6" style={{ minHeight: 400 }}>
+            <div className="rounded-2xl p-6" style={{ minHeight: 400, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
               <ChatInterface extract={extract} onKlaar={handleContextKlaar} />
             </div>
           </div>
@@ -236,8 +236,8 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
         {stap === 'laden' && (
           <div className="flex flex-col items-center justify-center py-24 gap-10">
             <div className="flex flex-col items-center gap-4">
-              <div className="animate-spin w-10 h-10 border-4 border-gray-100 rounded-full" style={{ borderTopColor: '#006f66' }} />
-              <p className="text-sm" style={{ color: '#9ba3a9' }}>Vacature wordt geanalyseerd…</p>
+              <div className="animate-spin w-10 h-10 border-4 rounded-full" style={{ borderColor: 'var(--color-border)', borderTopColor: 'var(--color-accent)' }} />
+              <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Vacature wordt geanalyseerd…</p>
             </div>
 
             <div className="relative">
@@ -247,18 +247,18 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative block max-w-sm rounded-2xl p-6 text-center transition-transform hover:scale-[1.02]"
-                style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', boxShadow: '0 4px 24px 0 rgba(0,111,102,0.10)' }}
+                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 4px 24px 0 rgba(0,111,102,0.20)' }}
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg mx-auto mb-4"
-                  style={{ backgroundColor: '#006f66' }}
+                  style={{ backgroundColor: 'var(--color-accent)' }}
                 >
                   ✦
                 </div>
-                <p className="text-base font-semibold mb-1" style={{ color: '#1a2e30' }}>
+                <p className="text-base font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
                   Op zoek naar verbetering van je werving?
                 </p>
-                <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--color-muted)' }}>
                   Ontdek de Recruitmentscan — een grondige analyse van je hele wervingsproces.
                 </p>
                 <span
@@ -276,17 +276,17 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
           <div>
             <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
               <div>
-                <h2 className="text-2xl font-semibold" style={{ color: '#1a2e30' }}>
+                <h2 className="text-2xl font-semibold" style={{ color: 'var(--color-text)' }}>
                   {analyseData.context.functietitel}
                 </h2>
-                <p className="text-sm mt-1" style={{ color: '#9ba3a9' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--color-muted)' }}>
                   {analyseData.context.bedrijfsnaam} · {analyseData.context.senioriteit} · {analyseData.context.sector}
                 </p>
               </div>
               <button
                 onClick={opnieuw}
-                className="text-sm px-4 py-2 rounded-xl border transition-colors hover:bg-gray-50"
-                style={{ borderColor: '#e5e7eb', color: '#9ba3a9' }}
+                className="text-sm px-4 py-2 rounded-xl border transition-colors"
+                style={{ borderColor: 'var(--color-border)', color: 'var(--color-muted)' }}
               >
                 Nieuwe analyse
               </button>

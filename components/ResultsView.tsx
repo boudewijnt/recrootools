@@ -56,20 +56,20 @@ export default function ResultsView({ data }: Props) {
   return (
     <div className="space-y-8">
       {/* Samenvatting balk */}
-      <div className="rounded-2xl p-6" style={{ backgroundColor: '#f2f7f8' }}>
+      <div className="rounded-2xl p-6" style={{ backgroundColor: 'var(--color-surface)' }}>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex gap-8">
             <div className="text-center">
               <p className="text-3xl font-semibold" style={{ color: '#006f66' }}>{gemiddelde}%</p>
-              <p className="text-xs mt-1" style={{ color: '#9ba3a9' }}>Gemiddelde score</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>Gemiddelde score</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-semibold" style={{ color: '#006f66' }}>{aantalGoed}</p>
-              <p className="text-xs mt-1" style={{ color: '#9ba3a9' }}>Criteria goed</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>Criteria goed</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-semibold" style={{ color: '#c0392b' }}>{aantalAandacht}</p>
-              <p className="text-xs mt-1" style={{ color: '#9ba3a9' }}>Aandachtspunten</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--color-muted)' }}>Aandachtspunten</p>
             </div>
           </div>
           <button
@@ -94,15 +94,15 @@ export default function ResultsView({ data }: Props) {
       </div>
 
       {/* Samenvatting tekst */}
-      <div className="rounded-xl border-l-4 p-5" style={{ borderColor: '#006f66', backgroundColor: '#f2f7f8' }}>
+      <div className="rounded-xl border-l-4 p-5" style={{ borderColor: 'var(--color-accent)', backgroundColor: 'var(--color-surface)' }}>
         <p className="text-xs font-semibold uppercase mb-2" style={{ color: '#006f66' }}>Kort & goed</p>
-        <p className="text-sm" style={{ color: '#3d5a5e' }}>{analyse.samenvatting}</p>
+        <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{analyse.samenvatting}</p>
       </div>
 
       {/* Standaard 6 criteria */}
       <div>
-        <h2 className="text-lg font-semibold mb-1" style={{ color: '#1a2e30' }}>Basisanalyse</h2>
-        <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>De 6 standaard criteria</p>
+        <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--color-text)' }}>Basisanalyse</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-muted)' }}>De 6 standaard criteria</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {STANDAARD_CRITERIA.map((sleutel) => (
             <CriterionCard
@@ -117,8 +117,8 @@ export default function ResultsView({ data }: Props) {
 
       {/* Extra 7 criteria */}
       <div>
-        <h2 className="text-lg font-semibold mb-1" style={{ color: '#1a2e30' }}>Uitgebreide analyse</h2>
-        <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>7 extra criteria</p>
+        <h2 className="text-lg font-semibold mb-1" style={{ color: 'var(--color-text)' }}>Uitgebreide analyse</h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--color-muted)' }}>7 extra criteria</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {EXTRA_CRITERIA.map((sleutel) => (
             <CriterionCard
@@ -132,12 +132,12 @@ export default function ResultsView({ data }: Props) {
 
       {/* Top 3 */}
       <div>
-        <h2 className="text-lg font-semibold mb-4" style={{ color: '#1a2e30' }}>Top 3 verbeterpunten</h2>
+        <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text)' }}>Top 3 verbeterpunten</h2>
         <div className="space-y-4">
           {analyse.top3.map((item, i) => {
             const kleur = i === 0 ? '#c0392b' : i === 1 ? '#e8902c' : '#6895a2'
             return (
-              <div key={i} className="flex rounded-xl overflow-hidden" style={{ backgroundColor: '#f2f7f8' }}>
+              <div key={i} className="flex rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
                 <div
                   className="flex items-center justify-center w-12 shrink-0"
                   style={{ backgroundColor: kleur }}
@@ -145,8 +145,8 @@ export default function ResultsView({ data }: Props) {
                   <span className="text-white font-semibold text-lg">{i + 1}</span>
                 </div>
                 <div className="p-4 flex-1">
-                  <p className="font-semibold text-sm mb-1" style={{ color: '#1a2e30' }}>{item.titel}</p>
-                  <p className="text-sm mb-2" style={{ color: '#3d5a5e' }}>{item.probleem}</p>
+                  <p className="font-semibold text-sm mb-1" style={{ color: 'var(--color-text)' }}>{item.titel}</p>
+                  <p className="text-sm mb-2" style={{ color: 'var(--color-muted)' }}>{item.probleem}</p>
                   <p className="text-sm font-medium" style={{ color: '#006f66' }}>
                     Advies: {item.advies}
                   </p>

@@ -144,21 +144,21 @@ export default function ChatInterface({ extract, onKlaar }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* Context tabel */}
-      <div className="mb-4 rounded-xl border border-gray-100 overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100" style={{ backgroundColor: '#f2f7f8' }}>
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#006f66' }}>
+      <div className="mb-4 rounded-xl overflow-hidden" style={{ border: '1px solid var(--color-border)' }}>
+        <div className="px-4 py-3 border-b" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>
             Gevonden context
           </p>
         </div>
-        <div className="divide-y divide-gray-50">
-          {Object.entries(context).map(([k, v]) => (
-            <div key={k} className="flex px-4 py-2">
-              <span className="text-xs w-32 shrink-0" style={{ color: '#9ba3a9' }}>
+        <div>
+          {Object.entries(context).map(([k, v], idx) => (
+            <div key={k} className="flex px-4 py-2" style={{ borderTop: idx === 0 ? 'none' : '1px solid var(--color-border)' }}>
+              <span className="text-xs w-32 shrink-0" style={{ color: 'var(--color-muted)' }}>
                 {VELD_LABELS[k] ?? k}
               </span>
               <span
                 className="text-xs font-medium"
-                style={{ color: v && v !== 'onbekend' && v !== 'niet vermeld' ? '#1a2e30' : '#9ba3a9' }}
+                style={{ color: v && v !== 'onbekend' && v !== 'niet vermeld' ? 'var(--color-text)' : 'var(--color-muted)' }}
               >
                 {v || '—'}
               </span>
@@ -182,8 +182,8 @@ export default function ChatInterface({ extract, onKlaar }: Props) {
             <div
               className="max-w-[80%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-line"
               style={{
-                backgroundColor: b.rol === 'agent' ? '#f2f7f8' : '#006f66',
-                color: b.rol === 'agent' ? '#1a2e30' : '#ffffff',
+                backgroundColor: b.rol === 'agent' ? 'var(--color-surface)' : 'var(--color-accent)',
+                color: b.rol === 'agent' ? 'var(--color-text)' : '#ffffff',
                 borderBottomLeftRadius: b.rol === 'agent' ? 4 : undefined,
                 borderBottomRightRadius: b.rol === 'gebruiker' ? 4 : undefined,
               }}
@@ -201,7 +201,7 @@ export default function ChatInterface({ extract, onKlaar }: Props) {
             >
               AI
             </div>
-            <div className="rounded-2xl px-4 py-3 flex gap-1" style={{ backgroundColor: '#f2f7f8', borderBottomLeftRadius: 4 }}>
+            <div className="rounded-2xl px-4 py-3 flex gap-1" style={{ backgroundColor: 'var(--color-surface)', borderBottomLeftRadius: 4 }}>
               {[0, 1, 2].map((i) => (
                 <span
                   key={i}
@@ -248,7 +248,8 @@ export default function ChatInterface({ extract, onKlaar }: Props) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Typ je antwoord…"
-            className="flex-1 text-sm text-gray-900 px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#006f66]"
+            className="flex-1 text-sm px-4 py-2.5 rounded-xl border outline-none"
+            style={{ color: 'var(--color-text)', backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border)' }}
           />
           <button
             type="submit"

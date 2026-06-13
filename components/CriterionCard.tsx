@@ -37,14 +37,14 @@ export default function CriterionCard({ sleutel, data, prioriteit }: Props) {
   return (
     <div
       className="rounded-xl border-2 overflow-hidden"
-      style={{ borderColor: prioriteit ? '#006f66' : kleur.border }}
+      style={{ borderColor: prioriteit ? '#006f66' : kleur.border, backgroundColor: 'var(--color-surface)' }}
     >
       <div style={{ height: 4, backgroundColor: kleur.bg }} />
       <div className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             {prioriteit && <span className="text-base">★</span>}
-            <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: '#1a2e30' }}>
+            <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text)' }}>
               {naam}
             </span>
           </div>
@@ -56,19 +56,19 @@ export default function CriterionCard({ sleutel, data, prioriteit }: Props) {
           </span>
         </div>
 
-        <div className="h-1.5 rounded-full mb-3" style={{ backgroundColor: '#f2f7f8' }}>
+        <div className="h-1.5 rounded-full mb-3" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
           <div
             className="h-1.5 rounded-full transition-all"
             style={{ width: `${data.score * 10}%`, backgroundColor: kleur.bg }}
           />
         </div>
 
-        <p className="text-sm mb-3" style={{ color: '#3d5a5e' }}>
+        <p className="text-sm mb-3" style={{ color: 'var(--color-muted)' }}>
           {data.toelichting}
         </p>
 
-        <div className="rounded-lg p-3" style={{ backgroundColor: '#e8f5f3' }}>
-          <p className="text-sm" style={{ color: '#006f66' }}>
+        <div className="rounded-lg p-3" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
+          <p className="text-sm" style={{ color: 'var(--color-accent)' }}>
             <span className="font-semibold">Tip:</span> {data.tip}
           </p>
         </div>
