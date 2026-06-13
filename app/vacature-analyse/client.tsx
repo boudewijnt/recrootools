@@ -234,9 +234,41 @@ export default function VacatureAnalyseClient({ credits: initialCredits }: Props
         )}
 
         {stap === 'laden' && (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <div className="animate-spin w-10 h-10 border-4 border-gray-100 rounded-full" style={{ borderTopColor: '#006f66' }} />
-            <p className="text-sm" style={{ color: '#9ba3a9' }}>Vacature wordt geanalyseerd…</p>
+          <div className="flex flex-col items-center justify-center py-24 gap-10">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin w-10 h-10 border-4 border-gray-100 rounded-full" style={{ borderTopColor: '#006f66' }} />
+              <p className="text-sm" style={{ color: '#9ba3a9' }}>Vacature wordt geanalyseerd…</p>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 rounded-2xl blur-xl opacity-60 animate-pulse" style={{ background: 'radial-gradient(ellipse at center, #006f6644 0%, #7db4c322 60%, transparent 100%)' }} />
+              <a
+                href="https://pluginrecruitment.nl/recruitmentscan"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block max-w-sm rounded-2xl p-6 text-center transition-transform hover:scale-[1.02]"
+                style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', boxShadow: '0 4px 24px 0 rgba(0,111,102,0.10)' }}
+              >
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg mx-auto mb-4"
+                  style={{ backgroundColor: '#006f66' }}
+                >
+                  ✦
+                </div>
+                <p className="text-base font-semibold mb-1" style={{ color: '#1a2e30' }}>
+                  Op zoek naar verbetering van je werving?
+                </p>
+                <p className="text-sm mb-4" style={{ color: '#9ba3a9' }}>
+                  Ontdek de Recruitmentscan — een grondige analyse van je hele wervingsproces.
+                </p>
+                <span
+                  className="inline-block text-sm font-semibold px-4 py-2 rounded-lg text-white"
+                  style={{ backgroundColor: '#006f66' }}
+                >
+                  Meer informatie →
+                </span>
+              </a>
+            </div>
           </div>
         )}
 
