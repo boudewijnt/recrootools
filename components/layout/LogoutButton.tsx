@@ -9,7 +9,7 @@ export default function LogoutButton() {
 
   return (
     <button
-      onClick={() => signOut(() => router.push('/login'))}
+      onClick={() => signOut({ redirectUrl: '/login' })}
       title="Uitloggen"
       className="w-9 h-9 rounded-lg flex items-center justify-center text-base transition-colors hover:opacity-80"
       style={{ color: 'var(--color-muted)' }}
