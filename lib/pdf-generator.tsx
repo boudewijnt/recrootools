@@ -145,12 +145,12 @@ function CriteriumKaart({ naam, data, marginRight }: { naam: string; data: Crite
           <View style={{ height: 4, width: `${data.score * 10}%`, backgroundColor: kleur, borderRadius: 2 }} />
         </View>
         <Text style={{ fontSize: 7.5, color: C.textMid, lineHeight: 1.45, marginBottom: 7 }}>
-          {truncate(data.toelichting, 175)}
+          {data.toelichting}
         </Text>
         <View style={{ backgroundColor: C.bgLight, borderRadius: 4, padding: 7 }}>
           <Text style={{ fontSize: 7.5, color: C.green, lineHeight: 1.4 }}>
             <Text style={{ fontWeight: 600 }}>Tip: </Text>
-            {truncate(data.tip, 140)}
+            {data.tip}
           </Text>
         </View>
       </View>
@@ -164,7 +164,7 @@ function CriteriaGrid({ items }: { items: { naam: string; data: CriteriumScore }
   return (
     <View>
       {rijen.map(i => (
-        <View key={i} style={{ flexDirection: 'row' }}>
+        <View key={i} wrap={false} style={{ flexDirection: 'row' }}>
           <CriteriumKaart naam={items[i].naam} data={items[i].data} marginRight={items[i + 1] ? GAP : 0} />
           {items[i + 1] && <CriteriumKaart naam={items[i + 1].naam} data={items[i + 1].data} />}
         </View>
