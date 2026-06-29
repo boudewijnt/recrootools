@@ -6,7 +6,7 @@ const anthropic = new Anthropic({
 
 export async function callClaude(prompt: string, systemPrompt?: string, maxTokens = 2048): Promise<string> {
   const response = await anthropic.messages.create({
-    model: 'claude-opus-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: maxTokens,
     system: systemPrompt,
     messages: [{ role: 'user', content: prompt }],

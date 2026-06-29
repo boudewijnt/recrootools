@@ -1,15 +1,43 @@
 @import "tailwindcss";
 
 :root {
+  /* === Plug-in Recruitment Huisstijl === */
+  --plgn-teal:             #7db4c3;
+  --plgn-teal-dark:        #6895a2;
+  --plgn-sage:             #a0bfb9;
+  --plgn-green:            #006f66;
+  --plgn-grey:             #9ba3a9;
+  --plgn-black:            #000000;
+  --plgn-bg-base:          #0d1117;
+  --plgn-bg-surface:       #161b22;
+  --plgn-bg-card:          #1c2230;
+  --plgn-accent:           #7db4c3;
+  --plgn-accent-hover:     #6895a2;
+  --plgn-accent-light:     rgba(125, 180, 195, 0.08);
+  --plgn-accent-border:    rgba(125, 180, 195, 0.25);
+  --plgn-accent-hover-bg:  rgba(125, 180, 195, 0.12);
+  --plgn-text-primary:     #ffffff;
+  --plgn-text-secondary:   #8b949e;
+  --plgn-text-muted:       #4a5568;
+  --plgn-border-subtle:    rgba(255, 255, 255, 0.05);
+  --plgn-border-card:      rgba(255, 255, 255, 0.07);
+  --plgn-border-accent:    rgba(125, 180, 195, 0.25);
+  --plgn-radius-sm:        8px;
+  --plgn-radius-md:        14px;
+  --plgn-radius-badge:     20px;
+  --plgn-radius-icon:      10px;
+  --plgn-font:             Arial, Helvetica, sans-serif;
+
+  /* Project-specifieke vars (verwijzen naar plgn) */
   --color-bg:          #0a1214;
   --color-surface:     #111c1e;
   --color-surface-alt: #0d1618;
   --color-border:      #1a2e30;
   --color-muted:       #4b6b6f;
-  --color-accent:      #7db4c3;
-  --color-primary:     #006f66;
-  --color-text:        #ffffff;
-  --color-text-muted:  #9ba3a9;
+  --color-accent:      var(--plgn-teal);
+  --color-primary:     var(--plgn-green);
+  --color-text:        var(--plgn-text-primary);
+  --color-text-muted:  var(--plgn-grey);
 }
 
 @theme inline {
